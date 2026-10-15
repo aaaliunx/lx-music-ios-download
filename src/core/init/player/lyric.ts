@@ -5,7 +5,6 @@ import playerState from '@/store/player/state'
 import { updateNowPlayingTitles } from '@/plugins/player/utils'
 import { updateMetaData } from '@/plugins/player'
 import { setLastLyric } from '@/core/player/playInfo'
-import { state } from '@/plugins/player/playList'
 import { Platform } from 'react-native'
 
 const updateRemoteLyric = async(lrc?: string) => {
