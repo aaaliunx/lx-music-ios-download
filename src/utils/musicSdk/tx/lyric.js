@@ -47,15 +47,15 @@ const parseTools = {
       if (!startTimeStr) return
 
       const words = line.replace(this.rxps.lineTime, '')
-      lrcLines.push(`${startTimeStr}${words.replace(this.rxps.wordTimeAll, '')}`)
+      lrcLines.push(`${startTimeStr}${lrcWords.replace(this.rxps.wordTimeAll, '')}`)
 
-      let times = words.match(this.rxps.wordTimeAll)
+      let times = lrcWords.match(this.rxps.wordTimeAll)
       if (!times) return
       times = times.map(time => {
         const result = /\((\d+),(\d+)\)/.exec(time)
         return `<${Math.max(parseInt(result[1]) - startMsTime, 0)},${result[2]}>`
       })
-      const wordArr = words.split(this.rxps.wordTime)
+      const wordArr = lrcWords.split(this.rxps.wordTime)
       const newWords = times.map((time, index) => `${time}${wordArr[index]}`).join('')
       lxlrcLines.push(`${startTimeStr}${newWords}`)
     }
@@ -121,17 +121,17 @@ const parseTools = {
       const startTimeStr = this.msFormat(startMsTime)
       if (!startTimeStr) return
 
-      let words = line.replace(this.rxps.lineTime, '')
+      let lrcWords = line.replace(this.rxps.lineTime, '')
 
-      lrcLines.push(`${startTimeStr}${words.replace(this.rxps.wordTimeAll, '')}`)
+      lrcLines.push(`${startTimeStr}${lrcWords.replace(this.rxps.wordTimeAll, '')}`)
 
-      let times = words.match(this.rxps.wordTimeAll)
+      let times = lrcWords.match(this.rxps.wordTimeAll)
       if (!times) return
       times = times.map(time => {
         const result = /\((\d+),(\d+)\)/.exec(time)
         return `<${Math.max(parseInt(result[1]) - startMsTime, 0)},${result[2]}>`
       })
-      const wordArr = words.split(this.rxps.wordTime)
+      const wordArr = lrcWords.split(this.rxps.wordTime)
       const newWords = times.map((time, index) => `${time}${wordArr[index]}`).join('')
       lxlrcLines.push(`${startTimeStr}${newWords}`)
     }
@@ -157,9 +157,9 @@ const parseTools = {
       const startTimeStr = this.msFormat(startMsTime)
       if (!startTimeStr) return
 
-      let words = line.replace(this.rxps.lineTime, '')
+      let lrcWords = line.replace(this.rxps.lineTime, '')
 
-      lrcLines.push(`${startTimeStr}${words.replace(this.rxps.wordTimeAll, '')}`)
+      lrcLines.push(`${startTimeStr}${lrcWords.replace(this.rxps.wordTimeAll, '')}`)
     }
     return lrcLines.join('\n')
   },
@@ -440,4 +440,5 @@ export default {
 //     return requestObj
 //   },
 // }
+
 
