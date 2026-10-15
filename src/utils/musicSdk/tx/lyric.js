@@ -134,7 +134,7 @@ const parseTools = {
       const wordArr = lrcWords.split(this.rxps.wordTime)
       const newWords = times.map((time, index) => `${time}${wordArr[index]}`).join('')
       lxlrcLines.push(`${startTimeStr}${newWords}`)
-    }
+    })
     return {
       lyric: lrcLines.join('\n'),
       lxlyric: lxlrcLines.join('\n'),
@@ -440,5 +440,6 @@ export default {
 //     return requestObj
 //   },
 // }
+
 
 
