@@ -11,6 +11,7 @@ import type { SelectInfo } from './ListMenu'
 import { type Metadata } from '@/components/MetadataEditModal'
 import musicSdk from '@/utils/musicSdk'
 import { getListMusicSync } from '@/utils/listManage'
+import { clearMusicUrlByMusic } from '@/utils/data'
 
 const searchFilterRxp = /\s|'|\.|,|，|&|"|、|\(|\)|（|）|`|~|-|<|>|\||\/|\]|\[|!|！|:|：|;|；|\?|？|·/g
 const normalizeSearchText = (str: string | undefined | null) => String(str ?? '').replace(searchFilterRxp, '').toLowerCase()
@@ -79,9 +80,23 @@ export const handleShare = (musicInfo: SelectInfo['musicInfo']) => {
 export const searchListMusic = (list: LX.Music.MusicInfo[], text: string) => {
   text = normalizeSearchText(text)
   if (!text) return []
+  const fullMathNameResults = new Set<LX.Music.MusicInfo>()
+  const fullMathSingerResults = new Set<LX.Music.MusicInfo>()
+  const fullMathAlbumResults = new Set<LX.Music.MusicInfo>()
+  for (const mInfo of list) {
+    if (normalizeSearchText(mInfo.name).includes(text)) {
+      fullMathNameResults.add(mInfo)
+    } else if (normalizeSearchText(mInfo.singer).includes(text)) {
+      fullMathSingerResults.add(mInfo)
+    } else if (normalizeSearchText(mInfo.meta.albumName).includes(text)) {
+      fullMathAlbumResults.add(mInfo)
+    }
+  }
   let result: LX.Music.MusicInfo[] = []
   let rxp = new RegExp(text.split('').map(s => s.replace(/[.*+?^${}()|[\]\\]/, '\\$&')).join('.*') + '.*', 'i')
   for (const mInfo of list) {
+    if (fullMathNameResults.has(mInfo) || fullMathSingerResults.has(mInfo) || fullMathAlbumResults.has(mInfo)) continue
+
     const str = normalizeSearchText(getMusicSearchText(mInfo))
     if (str.includes(text) || rxp.test(str)) result.push(mInfo)
   }
@@ -94,13 +109,28 @@ export const searchListMusic = (list: LX.Music.MusicInfo[], text: string) => {
       data: mInfo,
     })
   }
-  return sortedList.map(item => item.data).reverse()
+  return [
+    ...fullMathNameResults.values(),
+    ...fullMathSingerResults.values(),
+    ...fullMathAlbumResults.values(),
+    ...sortedList.map(item => item.data).reverse(),
+  ]
 }
 
 export const handleShowMusicSourceDetail = async(minfo: SelectInfo['musicInfo']) => {
   const url = musicSdk[minfo.source as LX.OnlineSource]?.getMusicDetailPageUrl(toOldMusicInfo(minfo))
   if (!url) return
   void openUrl(url)
+}
+
+export const clearMusicUrl = async(musicInfo: SelectInfo['musicInfo']) => {
+  try {
+    await clearMusicUrlByMusic(musicInfo)
+  } catch (error) {
+    toast(global.i18n.t('list_remove_cache_fail_tip', { msg: (error as Error).message }))
+    return
+  }
+  toast(global.i18n.t('list_remove_cache_success_tip'))
 }
 
 

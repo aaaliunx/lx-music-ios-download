@@ -42,6 +42,7 @@ const formatIOSNowPlayingMetadata = (metadata: {
     duration: metadata.duration,
     elapsedTime: metadata.elapsedTime,
     playbackRate: metadata.playbackRate,
+    lyric: metadata.lyric,
   }
 }
 
@@ -132,6 +133,7 @@ export const updateCurrentTrackMetadata = async(metadata: {
   duration?: number
   elapsedTime?: number
   playbackRate?: number
+  lyric?: string
 }) => {
   const currentTrackIndex = await TrackPlayer.getCurrentTrack().catch(() => null)
   if (currentTrackIndex != null && currentTrackIndex > -1) {
@@ -157,6 +159,7 @@ export const ensureCurrentTrackMetadata = (metadata: {
   duration?: number
   elapsedTime?: number
   playbackRate?: number
+  lyric?: string
 }) => {
   void (async() => {
     const targetMetadata = Platform.OS == 'ios' ? formatIOSNowPlayingMetadata(metadata) : metadata

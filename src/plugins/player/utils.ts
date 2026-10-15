@@ -5,6 +5,7 @@ import { destroyTrackPlayerCore } from './trackPlayerCore'
 import { existsFile, moveFile, privateStorageDirectoryPath, temporaryDirectoryPath } from '@/utils/fs'
 import { toast } from '@/utils/tools'
 import { NativeModules, Platform } from 'react-native'
+import { updateNowPlayingInfo } from '@/utils/nativeModules/nowPlaying'
 import { getAccuratePosition, seekToTime } from './seek'
 import {
   getNativeFlacDuration,
@@ -237,10 +238,28 @@ export const setPlaybackRate = async(num: number) => {
   if (Platform.OS == 'ios' && isNativeFlacActive()) return setNativeFlacRate(num)
   return TrackPlayer.setRate(num)
 }
-export const updateNowPlayingTitles = async(duration: number, title: string, artist: string, album: string) => {
-  console.log('set playing titles', duration, title, artist, album)
-  if (Platform.OS == 'ios') return Promise.resolve()
-  return TrackPlayer.updateNowPlayingTitles(duration, title, artist, album)
+export interface NowPlayingTitles {
+  title?: string
+  artist?: string
+  album?: string
+  lyric?: string
+}
+export const updateNowPlayingTitles = async(titles: NowPlayingTitles) => {
+  if (Platform.OS == 'ios') {
+    // iOS 使用原生 NowPlayingModule 同步（artist 字段用于承载歌词）
+    const metadata: { title?: string, artist?: string, album?: string } = {}
+    if (titles.lyric != null) {
+      metadata.artist = titles.lyric
+      metadata.album = ''
+    } else {
+      if (titles.title != null) metadata.title = titles.title
+      if (titles.artist != null) metadata.artist = titles.artist
+      if (titles.album != null) metadata.album = titles.album
+    }
+    if (Object.keys(metadata).length) await updateNowPlayingInfo(metadata)
+    return
+  }
+  return TrackPlayer.updateNowPlayingTitles(titles)
 }
 
 export const resetPlay = async() => Promise.all([setPause(), setCurrentTime(0)])

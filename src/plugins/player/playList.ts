@@ -28,6 +28,14 @@ const resolveMetadataDuration = (duration: number) => {
   return getTimelineDuration(playerState.playMusicInfo.musicInfo, duration)
 }
 
+// 完整蓝牙歌词：开启后通知栏/车载可拿到整首歌词文本
+const getCurrentFullLyric = (targetId: string) => {
+  return (settingState.setting['player.isShowBluetoothFullLyric'] && targetId &&
+      playerState.musicInfo.id == targetId && playerState.musicInfo.lrc)
+    ? playerState.musicInfo.lrc
+    : undefined
+}
+
 export const updateMetaData = async(musicInfo: LX.Player.MusicInfo, isPlay: boolean, lyric?: string, force = false) => {
   const prevIsPlaying = state.isPlaying
   state.isPlaying = isPlay
@@ -102,7 +110,7 @@ const updateMetaInfo = async(mInfo: LX.Player.MusicInfo, lyric?: string, isPlayi
   let album: string | undefined
   if (Platform.OS == 'ios') {
     name = formatNowPlayingTitleLine(mInfo.name ?? 'Unknow', mInfo.singer ?? '')
-    singer = lyric ?? ''
+    singer = getCurrentFullLyric(mInfo.id) ?? lyric ?? ''
     album = ''
   } else if (!state.isPlaying || lyric == null) {
     name = mInfo.name ?? 'Unknow'
@@ -122,6 +130,7 @@ const updateMetaInfo = async(mInfo: LX.Player.MusicInfo, lyric?: string, isPlayi
     elapsedTime: isNativeFlacActive()
       ? await getNativeFlacPosition().catch(() => 0)
       : await getAccuratePosition().catch(() => 0),
+    lyric: getCurrentFullLyric(mInfo.id),
   }
   await updateCurrentTrackMetadata(metadata)
 }
