@@ -44,13 +44,13 @@ const parseTools = {
 
       const startMsTime = parseInt(result[1])
       const startTimeStr = this.msFormat(startMsTime)
-      if (!startTimeStr) continue
+      if (!startTimeStr) return
 
       const words = line.replace(this.rxps.lineTime, '')
       lrcLines.push(`${startTimeStr}${words.replace(this.rxps.wordTimeAll, '')}`)
 
       let times = words.match(this.rxps.wordTimeAll)
-      if (!times) continue
+      if (!times) return
       times = times.map(time => {
         const result = /\((\d+),(\d+)\)/.exec(time)
         return `<${Math.max(parseInt(result[1]) - startMsTime, 0)},${result[2]}>`
@@ -78,7 +78,7 @@ const parseTools = {
 
       const startMsTime = parseInt(result[1])
       const startTimeStr = this.msFormat(startMsTime)
-      if (!startTimeStr) continue
+      if (!startTimeStr) return
       lrcLines.push(`${startTimeStr}${line.replace(this.rxps.lineTime, '').replace(this.rxps.wordTimeAll, '')}`)
     }
 
@@ -119,14 +119,14 @@ const parseTools = {
 
       const startMsTime = parseInt(result[1])
       const startTimeStr = this.msFormat(startMsTime)
-      if (!startTimeStr) continue
+      if (!startTimeStr) return
 
       let words = line.replace(this.rxps.lineTime, '')
 
       lrcLines.push(`${startTimeStr}${words.replace(this.rxps.wordTimeAll, '')}`)
 
       let times = words.match(this.rxps.wordTimeAll)
-      if (!times) continue
+      if (!times) return
       times = times.map(time => {
         const result = /\((\d+),(\d+)\)/.exec(time)
         return `<${Math.max(parseInt(result[1]) - startMsTime, 0)},${result[2]}>`
@@ -155,7 +155,7 @@ const parseTools = {
 
       const startMsTime = parseInt(result[1])
       const startTimeStr = this.msFormat(startMsTime)
-      if (!startTimeStr) continue
+      if (!startTimeStr) return
 
       let words = line.replace(this.rxps.lineTime, '')
 
@@ -440,3 +440,4 @@ export default {
 //     return requestObj
 //   },
 // }
+
